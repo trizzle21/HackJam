@@ -1,12 +1,15 @@
 package com.parse.starter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -14,19 +17,17 @@ import com.parse.SignUpCallback;
 import java.text.ParseException;
 
 
-
 public class SignUpActivity extends Activity {
     private Button registerButton;
-    public String textPerson;
-    public String password;
-    public String phonenumber;
-    public String emailname;
+    private String textPerson;
+    private String password;
+    private String phonenumber;
+    private String emailname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
         setUpButtons();
     }
 
@@ -54,52 +55,61 @@ public class SignUpActivity extends Activity {
     }
 
     private void setUpButtons() {
-        registerButton = (Button) findViewById(R.id.register_button);
+        registerButton = (Button) findViewById(R.id.signup_button);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               EditText textPerson_editText = (EditText) findViewById(R.id.textPerson_editText);
-               textPerson = textPerson_editText.getText().toString();
-               EditText textPassword_editText2 = (EditText) findViewById(R.id.textPassword_editText2);
-               password= textPassword_editText2.getText().toString();
-               EditText email_editText = (EditText) findViewById(R.id.email_editText);
-               emailname = email_editText.getText().toString();
-               EditText phone_editText = (EditText) findViewById(R.id.phone_editText);
-               phonenumber = phone_editText.getText().toString();
+                EditText textPerson_editText = (EditText) findViewById(R.id.textPerson_editText);
+                textPerson = textPerson_editText.getText().toString();
+                EditText textPassword_editText2 = (EditText) findViewById(R.id.textPassword_editText2);
+                password = textPassword_editText2.getText().toString();
+                EditText textPassword_editText3 = (EditText) findViewById(R.id.textPassword_editText3);
+                String password2 = textPassword_editText3.getText().toString();
+                EditText email_editText = (EditText) findViewById(R.id.email_editText);
+                emailname = email_editText.getText().toString();
+                EditText phone_editText = (EditText) findViewById(R.id.phone_editText);
+                phonenumber = phone_editText.getText().toString();
+                
+                if (password.equals(password2)) {
+                    createUser();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Passwords do not match.", Toast.LENGTH_SHORT).show();
 
-               createUser();
+                }
             }
-               });
+
+        });
 
 
+        }
 
-
-    }
-
-    private void createUser(){
+    private void createUser() {
         ParseUser user = new ParseUser();
         user.setUsername(textPerson);
         user.setPassword(password);
         user.setEmail(emailname);
         user.put("phone", phonenumber);
-        user.put("location", null);
-        SignUpCallback x = new SignUpCallback() {
+        user.put("location", "lol");
+        user.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(com.parse.ParseException e) {
                 if (e == null) {
                     // Hooray! Let them use the app now.
+                    Toast.makeText(getApplicationContext(), "Account Created Successfully", Toast.LENGTH_SHORT).show();
+                    Intent in = new Intent(getApplicationContext(),MatchActivity.class);
+                    startActivity(in);
                 } else {
                     // Sign up didn't succeed. Look at the ParseException
                     // to figure out what went wrong
+                    Toast.makeText(getApplicationContext(), "Account already taken.", Toast.LENGTH_SHORT).show();
+
+
                 }
             }
-        };
-
+        });
 
 
     }
-
-
 
 
 }
